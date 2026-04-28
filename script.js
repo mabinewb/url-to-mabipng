@@ -28,6 +28,39 @@ document.addEventListener('DOMContentLoaded', () => {
   function hideDownload() { downloadLink.style.display = 'none'; }
   function markDirty() { hideDownload(); }
 
+  function wrapLabelLines(label, maxWidth) {
+    const paragraphs = label.replace(/\r\n/g, '\n').split('\n');
+    const lines = [];
+
+    for (const paragraph of paragraphs) {
+      if (paragraph === '') {
+        lines.push('');
+        continue;
+      }
+
+      const words = paragraph.split(' ');
+      let currentLine = '';
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        if (ctx.measureText(testLine).width > maxWidth) {
+          if (currentLine) {
+            lines.push(currentLine);
+            currentLine = word;
+          } else {
+            lines.push(word);
+            currentLine = '';
+          }
+        } else {
+          currentLine = testLine;
+        }
+      }
+
+      if (currentLine !== '') lines.push(currentLine);
+    }
+
+    return lines.length ? lines : [''];
+  }
+
   // --- PNG 입력 시 authid/author 읽기 ---
   pngInput.addEventListener('change', async (e) => {
     inputFile = e.target.files[0] || null;
@@ -73,17 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const textAreaX = 96;
       const textAreaWidth = canvas.width - textAreaX - 4;
 
-      const words = label.split(' ');
-      const lines = [];
-      let cur='';
-      for (let w of words){
-        const test = cur ? (cur+' '+w): w;
-        if (ctx.measureText(test).width>textAreaWidth){
-          if(cur) lines.push(cur);
-          cur=w;
-        } else cur=test;
-      }
-      if(cur!=='') lines.push(cur);
+      const lines = wrapLabelLines(label, textAreaWidth);
 
       const lineHeight = fontSize+2;
       const totalHeight = lines.length*lineHeight;
@@ -155,16 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ctx.font=`${fontSize}px NanumBarunGothic`;
     const label=labelInput.value||'';
-    const words=label.split(' ');
-    let linesCandidate=[]; let cur='';
-    for(let w of words){
-      const test = cur? (cur+' '+w): w;
-      if(ctx.measureText(test).width>textAreaWidth){
-        if(cur) linesCandidate.push(cur);
-        cur=w;
-      } else cur=test;
-    }
-    if(cur) linesCandidate.push(cur);
+    const linesCandidate = wrapLabelLines(label, textAreaWidth);
     const totalHeight=linesCandidate.length*(fontSize+2);
 
     let startY=textPos.y;
