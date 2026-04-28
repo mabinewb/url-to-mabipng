@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const qrCanvas = document.createElement('canvas');
     QRCode.toCanvas(qrCanvas, url||'', {width:92,margin:0,errorCorrectionLevel:'M'}, (err)=>{
-      ctx.fillStyle='#ffffff';
+      ctx.fillStyle='#fefefe';
       ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.drawImage(qrCanvas,2,Math.floor((canvas.height-92)/2));
       ctx.fillStyle='#000000';
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return `chat_${yyyy}${mm}${dd}_${hh}${min}${ss}_${nick}.png`;
   }
 
-  ctx.fillStyle='#ffffff';
+  ctx.fillStyle='#fefefe';
   ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.strokeStyle='#ccc';
   ctx.strokeRect(0,0,canvas.width,canvas.height);
